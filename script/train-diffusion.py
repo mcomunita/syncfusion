@@ -2,15 +2,20 @@ import os
 import dotenv
 import hydra
 import pytorch_lightning as pl
-from main import utils
 from omegaconf import DictConfig, open_dict
+
+import sys
+module_path = os.path.abspath(os.path.join('.'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
+from main import utils
 
 # Load environment variables from `.env`.
 dotenv.load_dotenv(override=True)
 log = utils.get_logger(__name__)
 
 
-@hydra.main(config_path=".", config_name="config.yaml", version_base=None)
+@hydra.main(config_path="..", config_name="config.yaml", version_base=None)
 def main(config: DictConfig) -> None:
 
     print("\n--- CONFIG ---")
