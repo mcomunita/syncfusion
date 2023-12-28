@@ -1,0 +1,28 @@
+# @package _global_
+
+dataset_path: ${work_dir}/data/greatest_hit/test_onset_preds.tar
+experiment_path: ${work_dir}/output/experiments/gh-gt-pred
+
+sample_rate: 48000
+length: 96000
+one_chunk_per_track: True
+
+experiment:
+  _target_: main.dataset_gh.create_fad_gt
+  _partial_: True
+  experiment_path: ${experiment_path}
+  batch_size: 64  # < Change to best fit your architecture
+  sample_rate: ${sample_rate}
+  one_chunk_per_track: ${one_chunk_per_track}
+  downsample_rate: 22050
+
+  dataset:
+    _target_: main.dataset_gh.create_sfx_dataset
+    path: ${dataset_path}
+    sample_rate: ${sample_rate}
+    chunk_size: ${length}
+    shift_augment: False
+    cut_prefix: False
+    onset_check_length: ${length}
+    one_chunk_per_track: ${one_chunk_per_track}
+    shardshuffle: False

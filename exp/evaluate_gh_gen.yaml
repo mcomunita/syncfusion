@@ -1,0 +1,45 @@
+# @package _global_
+
+defaults:
+  - model: diffusion
+
+dataset_path: ${work_dir}/data/greatest_hit/test_shard_1.tar
+experiment_path: ${work_dir}/output/experiments/gh-gen
+gen_length: 262144
+cut_length: 96000
+sample_rate: 48000
+one_chunk_per_track: True
+
+experiment:
+  _target_: main.generation.generate_dataset
+  _partial_: True
+  experiment_path: ${experiment_path}
+  model: ${model}
+  model_path: null
+  device: 'cuda'
+  batch_size: 10  # < Change to best fit your architecture
+  num_steps: 150
+  embedding_scale: 7.5
+  sample_rate: ${sample_rate}
+  one_chunk_per_track: ${one_chunk_per_track}
+  length: ${gen_length}
+  cut_length: ${cut_length}
+  cut_prefix: True
+  downsample_rate: 22050
+
+  dataset:
+    _target_: main.dataset_gh.create_sfx_dataset
+    path: ${dataset_path}
+    sample_rate: ${sample_rate}
+    chunk_size: ${gen_length}
+    shift_augment: False
+    cut_prefix: False
+    one_chunk_per_track: ${one_chunk_per_track}
+    onset_check_length: ${cut_length}
+    shardshuffle: False
+
+evaluation:
+  _target_: evaluation.evaluate_fad.evaluate_fad
+  _partial_: True
+  experiment_path: ${experiment_path}
+  gt_path: ${work_dir}/output/experiments/gh-gt
