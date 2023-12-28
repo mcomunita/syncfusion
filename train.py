@@ -13,8 +13,9 @@ log = utils.get_logger(__name__)
 @hydra.main(config_path=".", config_name="config.yaml", version_base=None)
 def main(config: DictConfig) -> None:
 
-    print("--- CONFIG")
+    print("\n--- CONFIG ---")
     print(config)
+    print("--------------\n")
 
     # Logs config tree
     utils.extras(config)
