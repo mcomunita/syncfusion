@@ -1,0 +1,2 @@
+python CondFoleyGen/script/train-transformer.py fit \
+-c CondFoleyGen/config/greatesthit_transformer_with_vNet_randshift_2s_GH_vqgan_no_earlystop.yaml

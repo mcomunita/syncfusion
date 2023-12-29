@@ -1,0 +1,12 @@
+python CondFoleyGen/audio_generation.py \
+--gh_testset \
+--transformer_ckpt_path "/import/c4dm-datasets-ext/DIFF-SFX/logs/transformer-new/checkpoints/epoch=38-step=103467.ckpt" \
+--transformer_config_path "/import/c4dm-datasets-ext/DIFF-SFX/logs/transformer-new/train/config.yaml" \
+--target_log_dir "/import/c4dm-datasets-ext/DIFF-SFX/logs/transformer-new/test" \
+--temp_dir "/import/c4dm-datasets-ext/DIFF-SFX/logs/transformer-new/test/tmp" \
+--test_data_to_use 1.0 \
+--test_chunks_to_use 1.0 \
+--chunks_to_generate 190 \
+--orig_videos_dir /import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4 \
+--W_scale 3 \
+--shuffle_test_chunks

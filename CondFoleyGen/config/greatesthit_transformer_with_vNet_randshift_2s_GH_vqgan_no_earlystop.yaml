@@ -1,0 +1,163 @@
+seed_everything: true
+
+trainer:
+  max_epochs: 100
+
+  logger:
+    class_path: pytorch_lightning.loggers.WandbLogger
+    init_args:
+      entity: team-diffusion-sfx
+      project: diffusion-sfx
+      # id: null # if null wandb gives it id
+      # name: "GH-train" # if null wandb gives it name
+      save_dir: "/import/c4dm-datasets-ext/DIFF-SFX/logs/transformer-new/train" # dir needs to already exist
+      # group: "TRANSFORMER-TRAIN"
+
+  callbacks:
+    - class_path: pytorch_lightning.callbacks.ModelCheckpoint
+      init_args:
+        dirpath: /import/c4dm-datasets-ext/DIFF-SFX/logs/transformer-new/checkpoints
+        monitor: val/loss
+        mode: min
+        save_last: true
+        save_top_k: 1
+
+    - class_path: pytorch_lightning.callbacks.ModelSummary
+      init_args:
+        max_depth: 2
+
+    - class_path: pytorch_lightning.callbacks.LearningRateMonitor
+
+    - class_path: CondFoleyGen.specvqgan.modules.callbacks.image_logger.ImageLogger
+      init_args:
+        epoch_frequency: 1
+        batch_frequency: 20000
+        max_images: 16
+        clamp: True
+        increase_log_steps: True
+        spec_dir_name: None
+        sample_rate: 48000
+        for_specs: True
+        vocoder_cfg:
+          target: CondFoleyGen.specvqgan.models.vocoder_melgan.VocoderMelGan
+          params:
+            ckpt_vocoder: "CondFoleyGen/specvqgan/melgan_ckpt/" # from https://github.com/v-iashin/specvqgan/tree/main/vocoder/logs/vggsound
+
+model:
+  class_path: CondFoleyGen.specvqgan.models.av_cond_transformer.Net2NetTransformerAVCond
+  init_args:
+    learning_rate: 5e-6
+    cond_stage_key: feature
+    clip: 50
+    p_normalize: 1.0
+    transformer_config:
+      target: CondFoleyGen.specvqgan.modules.transformer.mingpt.GPTFeats
+      params:
+        feat_embedding_config:
+          target: torch.nn.Conv1d # conv is used for convenience of applying the same FC at each position (kernel_size=1, padding=0) – donot change these params
+          params:
+            in_channels: 512 # feat_depth
+            out_channels: 1024 # n_embd
+            kernel_size: 1
+            padding: 0
+        GPT_config:
+          vocab_size: 1024
+          block_size: 160 # clip * 2 + how many frames (1)
+          n_layer: 24
+          n_head: 16
+          n_embd: 1024
+    first_stage_permuter_config:
+      target: CondFoleyGen.specvqgan.modules.transformer.permuter.ColumnMajor
+      params:
+        H: 5 # mel_num, num of feats in specs / down_factor
+        W: 10 # cropped spec length / down_factor
+    first_stage_config:
+      target: CondFoleyGen.specvqgan.models.vqgan.VQModel
+      params:
+        ckpt_path: "/import/c4dm-datasets-ext/DIFF-SFX/logs/specvqgan/checkpoints/epoch=399-step=318400.ckpt" # e.g. 'logs/2022-09-11T23-55-13_greatesthit_codebook/checkpoints/last.ckpt'
+        learning_rate: 4.5e-6
+        embed_dim: 256
+        n_embed: 1024
+        L: 2.0
+        ddconfig:
+          double_z: false
+          z_channels: 256
+          resolution: 160
+          in_channels: 1
+          out_ch: 1
+          ch: 128
+          ch_mult: [1, 1, 2, 2, 4]
+          num_res_blocks: 2
+          attn_resolutions: [10]
+          dropout: 0.0
+        lossconfig:
+          class_path: CondFoleyGen.specvqgan.modules.losses.dummy.DummyLoss
+    # no permuter for the cond stage as the raw features is already a sequence
+    cond_stage_config:
+      target: CondFoleyGen.specvqgan.modules.video_model.r2plus1d_18.r2plus1d18KeepTemp
+
+data:
+  class_path: CondFoleyGen.specvqgan.data.datamodule_greatesthits.CondGreatestHitsWaveCondOnImageDatamodule
+  init_args:
+    root_dir: "/import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed"
+    train_split_file_path: "/import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed/train.txt"
+    train_data_to_use: 1.0
+    train_frame_transforms:
+      class_path: torchvision.transforms.Compose
+      init_args:
+        transforms:
+          - class_path: CondFoleyGen.specvqgan.data.transforms.Resize3D
+            init_args:
+              size: 128
+          - class_path: CondFoleyGen.specvqgan.data.transforms.RandomResizedCrop3D
+            init_args:
+              size: 112
+              scale: [0.5, 1.0]
+          - class_path: CondFoleyGen.specvqgan.data.transforms.RandomHorizontalFlip3D
+          - class_path: CondFoleyGen.specvqgan.data.transforms.ColorJitter3D
+            init_args:
+              brightness: 0.4
+              saturation: 0.4
+              contrast: 0.2
+              hue: 0.1
+          - class_path: CondFoleyGen.specvqgan.data.transforms.ToTensor3D
+          - class_path: CondFoleyGen.specvqgan.data.transforms.Normalize3D
+            init_args:
+              mean: [0.485, 0.456, 0.406]
+              std: [0.229, 0.224, 0.225]
+    
+    val_split_file_path: "/import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed/val.txt"
+    val_data_to_use: 1.0
+    val_frame_transforms: 
+      class_path: torchvision.transforms.Compose
+      init_args:
+        transforms:
+          - class_path: CondFoleyGen.specvqgan.data.transforms.Resize3D
+            init_args:
+              size: 128
+          - class_path: CondFoleyGen.specvqgan.data.transforms.CenterCrop3D
+            init_args:
+              size: 112
+          - class_path: CondFoleyGen.specvqgan.data.transforms.ToTensor3D
+          - class_path: CondFoleyGen.specvqgan.data.transforms.Normalize3D
+            init_args:
+              mean: [0.485, 0.456, 0.406]
+              std: [0.229, 0.224, 0.225]
+
+    test_split_file_path: "/import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed/test.txt"
+    test_data_to_use: 1.0
+    test_frame_transforms: null
+    
+    chunk_length_in_seconds: 2.0
+    p_outside_cond: 0.
+    p_audio_aug: 0.5
+    rand_shift: True
+    rand_shift_range: [-0.5, 0.5]
+    sample_rate: 22050
+    audio_file_suffix: ".resampled.wav"
+    annotations_file_suffix: ".times.csv"
+    metadata_file_suffix: ".metadata.json"
+    frame_file_suffix: ".jpg"
+    batch_size: 4
+    num_workers: 12
+    pin_memory: True

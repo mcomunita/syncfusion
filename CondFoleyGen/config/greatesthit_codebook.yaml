@@ -1,0 +1,102 @@
+seed_everything: true
+
+trainer:
+  max_epochs: 1000
+
+  logger:
+    class_path: pytorch_lightning.loggers.WandbLogger
+    init_args:
+      entity: team-diffusion-sfx
+      project: diffusion-sfx
+      # id: null # if null wandb gives it id
+      # name: "GH-train" # if null wandb gives it name
+      save_dir: "logs/specvqgan/train" # dir needs to already exist
+      # group: "CODEBOOK-TRAIN"
+
+  callbacks:
+    - class_path: pytorch_lightning.callbacks.ModelCheckpoint
+      init_args:
+        dirpath: logs/specvqgan/checkpoints
+        save_last: false
+        save_top_k: -1
+        filename: "{epoch}-{step}"
+        verbose: true
+        every_n_epochs: 200
+
+    - class_path: pytorch_lightning.callbacks.ModelSummary
+      init_args:
+        max_depth: 2
+
+    - class_path: pytorch_lightning.callbacks.LearningRateMonitor
+
+    - class_path: CondFoleyGen.specvqgan.modules.callbacks.image_logger.ImageLogger
+      init_args:
+        epoch_frequency: 1
+        batch_frequency: 20000
+        max_images: 16
+        clamp: True
+        increase_log_steps: True
+        spec_dir_name: None
+        sample_rate: 48000
+        for_specs: True
+        vocoder_cfg:
+          target: CondFoleyGen.specvqgan.models.vocoder_melgan.VocoderMelGan
+          params:
+            ckpt_vocoder: "CondFoleyGen/specvqgan/melgan_ckpt/" # from https://github.com/v-iashin/SpecVQGAN/tree/main/vocoder/logs/vggsound
+
+model:
+  class_path: CondFoleyGen.specvqgan.models.vqgan.VQModel
+  init_args:
+    learning_rate: 4.5e-6
+    embed_dim: 256
+    n_embed: 1024
+    L: 2.0
+    ddconfig:
+      double_z: False
+      z_channels: 256
+      resolution: 160
+      in_channels: 1
+      out_ch: 1
+      ch: 128
+      ch_mult: [1, 1, 2, 2, 4] # num_down = len(ch_mult)-1
+      num_res_blocks: 2
+      attn_resolutions: [10]
+      dropout: 0.0
+    lossconfig:
+      class_path: CondFoleyGen.specvqgan.modules.losses.vqperceptual.VQLPAPSWithDiscriminator
+      init_args:
+        disc_conditional: False
+        disc_in_channels: 1
+        disc_start: 30001
+        disc_weight: 0.8
+        codebook_weight: 1.0
+        min_adapt_weight: 1.0
+        max_adapt_weight: 1.0
+        perceptual_weight: 1.0
+
+data:
+  class_path: CondFoleyGen.specvqgan.data.datamodule_greatesthits.GreatestHitsWaveDatamodule
+  init_args:
+    root_dir: "/import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed"
+    
+    train_split_file_path: "/import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed/train.txt"
+    train_data_to_use: 1.0
+    
+    val_split_file_path: "/import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed/val.txt"
+    val_data_to_use: 1.0
+    
+    test_split_file_path: "/import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed/test.txt"
+    test_data_to_use: 1.0
+    
+    chunk_length_in_seconds: 2.0
+    sample_rate: 22050
+    rand_shift: True
+    rand_shift_range: [-0.5, 0.5]
+    
+    audio_file_suffix: ".resampled.wav"
+    annotations_file_suffix: ".times.csv"
+    metadata_file_suffix: ".metadata.json"
+    
+    batch_size: 40
+    num_workers: 20
+    pin_memory: True
