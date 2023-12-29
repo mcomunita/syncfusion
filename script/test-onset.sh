@@ -1,0 +1,12 @@
+python script/test-onset.py test \
+--config "/import/c4dm-datasets-ext/DIFF-SFX/logs/onset/train-augment/config.yaml" \
+--ckpt_path "/import/c4dm-datasets-ext/DIFF-SFX/logs/onset/checkpoints-augment/last.ckpt" \
+--trainer.logger.save_dir "/import/c4dm-datasets-ext/DIFF-SFX/logs/onset/test-augment-2/last" \
+--trainer.logger.entity team-mcomunita \
+--trainer.logger.project diffusion-sfx \
+--trainer.logger.name GH-test-augment-last-0.75thresh \
+--trainer.logger.group ONSET-TEST \
+--trainer.accelerator gpu \
+--trainer.strategy auto \
+--trainer.devices=1 \
+--data.test_data_to_use 1.0

@@ -1,0 +1,52 @@
+seed_everything: true
+
+trainer:
+  max_epochs: 100
+  
+  logger:
+    class_path: pytorch_lightning.loggers.WandbLogger
+    init_args:
+      entity: team-mcomunita
+      project: diffusion-sfx
+      id: null
+      name: GH-train # if null wandb gives it name
+      save_dir: /import/c4dm-datasets-ext/DIFF-SFX/logs/onset/train-augment # dir needs to already exist
+      group: ONSET-AUGMENT
+  
+  callbacks:
+    - class_path: pytorch_lightning.callbacks.ModelCheckpoint
+      init_args:
+        dirpath: /import/c4dm-datasets-ext/DIFF-SFX/logs/onset/checkpoints-augment
+        save_last: true
+        save_top_k: 1
+        monitor: loss/val
+        mode: min
+        # every_n_train_steps: 5000
+        every_n_epochs: 10
+        filename: "{epoch}-{step}-{loss/val:.3f}"
+    
+    - class_path: pytorch_lightning.callbacks.ModelSummary
+      init_args:
+        max_depth: 2
+
+    - class_path: pytorch_lightning.callbacks.LearningRateMonitor
+  
+  # gradient_clip_val: 4.0
+  # gradient_clip_algorithm: norm
+  # max_steps: 150000  
+  
+  # enable_checkpointing: true
+  # default_root_dir: null
+  # devices: -1
+  # track_grad_norm: -1
+  # check_val_every_n_epoch: 1
+  # log_every_n_steps: 50
+  # accelerator: gpu
+  # strategy: ddp
+  # sync_batchnorm: true
+  # precision: '32-true'
+  # enable_model_summary: true
+  # num_sanity_val_steps: 2
+  # benchmark: true
+  # amp_backend: native
+  # multiple_trainloader_mode: max_size_cycle

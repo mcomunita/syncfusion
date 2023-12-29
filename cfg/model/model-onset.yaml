@@ -1,0 +1,13 @@
+model:
+  class_path: main.module_onset.Model
+  init_args:
+    lr: 1e-4
+    lr_beta1: 0.95
+    lr_beta2: 0.999
+    lr_eps: 1e-6
+    lr_weight_decay: 1e-3
+
+    model:
+      class_path: main.onset_net.VideoOnsetNet
+      init_args:
+        pretrained: False
