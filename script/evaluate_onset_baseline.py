@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import average_precision_score, precision_recall_curve
 
 ##############################################################################
-# EVALUATE ACC & AP OF THE BASELINE MODEL
+# EVALUATE ACC & AP BASELINE MODEL
 ##############################################################################
 
 
