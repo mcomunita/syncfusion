@@ -14,7 +14,8 @@ datamodule:
 
   train_dataset:
     _target_: main.dataset_diffusion.create_sfx_dataset
-    path: ${DIR_DATA}
+    path: null
+    # path: ${DIR_DATA}
     sample_rate: ${sampling_rate}
     chunk_size: ${length}
     shift_augment: True
@@ -24,8 +25,8 @@ datamodule:
 
   val_dataset:
     _target_: main.dataset_diffusion.create_sfx_dataset
-    # path: null
-    path: data/DIFF-SFX-webdataset/greatest_hits/val_shard_1.tar
+    path: null
+    # path: data/DIFF-SFX-webdataset/greatest_hits/val_shard_1.tar
     sample_rate: ${sampling_rate}
     chunk_size: ${length}
     shift_augment: False
