@@ -1,0 +1,27 @@
+data:
+  class_path: main.datamodule_onset.GreatestHitsDatamodule
+  init_args:
+    root_dir: /import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed
+    
+    train_split_file_path: /import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed/train.txt
+    train_data_to_use: 0.01
+    train_frames_transforms: null
+
+    val_split_file_path: /import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed/val.txt
+    val_data_to_use: 0.1
+    val_frames_transforms: null
+
+    test_split_file_path: /import/c4dm-datasets-ext/DIFF-SFX/GREATEST-HITS-DATASET/mic-mp4-processed/test.txt
+    test_data_to_use: 1.0
+    test_frames_transforms: null
+    
+    chunk_length_in_seconds: 2.0
+
+    audio_file_suffix: .resampled.wav
+    annotations_file_suffix: .times.csv
+    metadata_file_suffix: .metadata.json
+    frame_file_suffix: .jpg
+    
+    batch_size: 16
+    num_workers: 8
+    pin_memory: True
