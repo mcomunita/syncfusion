@@ -1,14 +1,14 @@
-from main import utils
 import os
-import dotenv
-import hydra
-import pytorch_lightning as pl
-from omegaconf import DictConfig, open_dict
-
 import sys
 module_path = os.path.abspath(os.path.join('.'))
 if module_path not in sys.path:
     sys.path.append(module_path)
+import dotenv
+import hydra
+import pytorch_lightning as pl
+from omegaconf import DictConfig, open_dict
+from main import utils
+
 
 # Load environment variables from `.env`.
 dotenv.load_dotenv(override=True)
