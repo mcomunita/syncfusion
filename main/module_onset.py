@@ -28,7 +28,7 @@ class Model(pl.LightningModule):
         lr_beta2: float,
         lr_eps: float,
         lr_weight_decay: float,
-        model: VideoOnsetNet
+        onset_model: VideoOnsetNet
     ):
         super().__init__()
         self.lr = lr
@@ -36,7 +36,7 @@ class Model(pl.LightningModule):
         self.lr_beta2 = lr_beta2
         self.lr_eps = lr_eps
         self.lr_weight_decay = lr_weight_decay
-        self.model: VideoOnsetNet = model
+        self.model: VideoOnsetNet = onset_model
         self.loss = BCLoss()
         # self.sanity_check_done = False
 

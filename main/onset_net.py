@@ -1,6 +1,10 @@
+import os
+import sys
+module_path = os.path.abspath(os.path.join('.'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
 import torch
 import torch.nn as nn
-
 
 from main.resnet import r2plus1d_18
 
@@ -41,7 +45,7 @@ class R2plus1d18KeepTemp(nn.Module):
 
 class VideoOnsetNet(nn.Module):
     # Video Onset detection network
-    def __init__(self, pretrained):
+    def __init__(self, pretrained=False):
         super(VideoOnsetNet, self).__init__()
         self.net = R2plus1d18KeepTemp(pretrained=pretrained)
         self.fc = nn.Sequential(
