@@ -1,3 +1,8 @@
+import os
+import sys
+module_path = os.path.abspath(os.path.join('.'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
 import torch
 import librosa
 import pytorch_lightning as pl
@@ -6,7 +11,7 @@ import torchaudio
 import plotly.graph_objs as go
 from torch import Tensor
 from pytorch_lightning import Callback, Trainer
-from pytorch_lightning.loggers import LoggerCollection, WandbLogger
+from pytorch_lightning.loggers import WandbLogger  # , LoggerCollection
 from audio_diffusion_pytorch import DiffusionModel
 from audio_encoders_pytorch import Encoder1d
 from typing import List, Optional, Callable
@@ -93,10 +98,10 @@ def get_wandb_logger(trainer: Trainer) -> Optional[WandbLogger]:
     if isinstance(trainer.logger, WandbLogger):
         return trainer.logger
 
-    if isinstance(trainer.logger, LoggerCollection):
-        for logger in trainer.logger:
-            if isinstance(logger, WandbLogger):
-                return logger
+    # if isinstance(trainer.logger, LoggerCollection):
+    #     for logger in trainer.logger:
+    #         if isinstance(logger, WandbLogger):
+    #             return logger
 
     print("WandbLogger not found.")
     return None
@@ -175,9 +180,7 @@ class SampleLogger(Callback):
     def on_validation_epoch_start(self, trainer, pl_module):
         self.log_next = True
 
-    def on_validation_batch_start(
-        self, trainer, pl_module, batch, batch_idx, dataloader_idx
-    ):
+    def on_validation_batch_start(self, trainer, pl_module, batch, batch_idx, dataloader_idx=0):
         if self.log_next:
             self.log_sample(trainer, pl_module, batch)
             self.log_next = False

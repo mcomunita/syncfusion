@@ -6,6 +6,7 @@ if module_path not in sys.path:
 import dotenv
 import hydra
 import pytorch_lightning as pl
+import torch
 from omegaconf import DictConfig, open_dict
 from main import utils
 
@@ -13,6 +14,8 @@ from main import utils
 # Load environment variables from `.env`.
 dotenv.load_dotenv(override=True)
 log = utils.get_logger(__name__)
+
+torch.set_float32_matmul_precision('high')
 
 
 @hydra.main(config_path="..", config_name="config.yaml", version_base=None)

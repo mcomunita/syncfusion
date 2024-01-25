@@ -1,20 +1,16 @@
-import torch
 import os
-# import torchaudio
+import sys
+module_path = os.path.abspath(os.path.join('.'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
+import torch
 import wandb
-# import librosa
 import numpy as np
 import glob
 import pytorch_lightning as pl
-# import plotly.graph_objs as go
 
-# from typing import Optional
 from sklearn.metrics import average_precision_score
 from natsort import natsorted
-# from einops import rearrange
-# from pytorch_lightning import Callback, Trainer
-# from pytorch_lightning.loggers import WandbLogger
-# from torch import Tensor, nn
 from torch.utils.data import DataLoader
 from main.dataset_onset import GreatestHitsDataset
 from main.onset_net import VideoOnsetNet
@@ -53,10 +49,10 @@ class Model(pl.LightningModule):
             weight_decay=self.lr_weight_decay,
         )
         return optimizer
-    
+
     # def on_train_start(self):
     #     self.sanity_check_done = True
-    
+
     # def on_test_start(self):
     #     self.sanity_check_done = True
 
@@ -198,8 +194,8 @@ class Model(pl.LightningModule):
 
             # remove consecutive onsets in pred
             for j in range(len(pred_indecies) - 2):
-                if pred_indecies[j] == 1 and pred_indecies[j+1] == 1:
-                    pred_indecies = np.delete(pred_indecies, j+1)
+                if pred_indecies[j] == 1 and pred_indecies[j + 1] == 1:
+                    pred_indecies = np.delete(pred_indecies, j + 1)
 
             # get the corresponding time stamps
             target_times = (target_indecies + start_frame[i].cpu().numpy()) / frame_rate[i].cpu().numpy()
@@ -381,8 +377,8 @@ class BCLoss(torch.nn.Module):
         # remove consecutive onsets in pred
         for i in range(pred.shape[0]):
             for j in range(pred.shape[-1] - 1):
-                if pred[i][j] == 1 and pred[i][j+1] == 1:
-                    pred[i][j+1] = 0
+                if pred[i][j] == 1 and pred[i][j + 1] == 1:
+                    pred[i][j + 1] = 0
 
         # print(f"pred: {pred[0]}")
         # print(f"target: {target[0]}")
