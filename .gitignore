@@ -1,0 +1,13 @@
+# .*
+# *.log
+.venv
+.vscode
+__pycache__
+checkpoints/*
+data/*
+logs/*
+wandb/*
+
+# Ignore model checkpoints
+CondFoleyGen/specvqgan/melgan_ckpt/best_netG.pt
+CondFoleyGen/specvqgan/modules/autoencoder/lpaps/vggishish16.pt
