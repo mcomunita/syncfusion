@@ -1,7 +1,6 @@
-# .*
-# *.log
 .venv
 .vscode
+.DS_Store
 __pycache__
 checkpoints/*
 data/*
