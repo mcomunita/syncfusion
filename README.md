@@ -1,13 +1,11 @@
 <div align="center">
 
 # SyncFusion
-    
-Multimodal Onset-Synchronized Video-to-Audio Foley Synthesis
+
+**Multimodal Onset-Synchronized Video-to-Audio Foley Synthesis**
 
 
-[![Demo](https://img.shields.io/badge/Web-Demo-blue)](https://csteinmetz1.github.io/DeepAFx-ST)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](TBD)
-[![arXiv](https://img.shields.io/badge/arXiv-2207.08759-b31b1b.svg)](https://arxiv.org/abs/2207.08759)
+[Paper](https://arxiv.org/abs/2211.00497) | [Webpage](https://mcomunita.github.io/gcn-tfilm_page/)
 
 <!-- <img width="700px" src="docs/new-generic-style-transfer-headline.svg"> -->
  
