@@ -10,7 +10,8 @@
 
 <sup>1</sup> Centre for Digital Music, Queen Mary University of London, UK<br><sup>2</sup> Sapienza University of Rome, Italy
 
-![syncfusion](img/syncfusion-image.png){width=400}
+<!-- ![syncfusion](img/syncfusion-image.png){width=200} -->
+<img width="700px" src="img/syncfusion-image.png">
 
 </div>
 
