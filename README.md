@@ -68,7 +68,8 @@ python script/gh_preprocess_split.py
 
 ---
 ## Preprocessing for Diffusion Model
-Emilian to fill ... webdataset and stuff
+
+Coming...
 
 ---
 ## Training Onset Model
@@ -124,9 +125,16 @@ changing the necessary arguments.
 ---
 ## Testing Diffusion Model
 
-Emilian to fill...
+Coming...
+
+---
+## Checkpoints
+
+Coming...
 
 ---
 ## Credits
 
 [https://github.com/archinetai/audio-diffusion-pytorch-trainer](https://github.com/archinetai/audio-diffusion-pytorch-trainer)
+[https://github.com/XYPB/CondFoleyGen](https://github.com/XYPB/CondFoleyGen)
+[https://andrewowens.com/vis/](https://andrewowens.com/vis/)
