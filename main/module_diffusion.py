@@ -11,10 +11,10 @@ import torchaudio
 import plotly.graph_objs as go
 from torch import Tensor
 from pytorch_lightning import Callback, Trainer
-from pytorch_lightning.loggers import WandbLogger  # , LoggerCollection
+from pytorch_lightning.loggers import WandbLogger
 from audio_diffusion_pytorch import DiffusionModel
 from audio_encoders_pytorch import Encoder1d
-from typing import List, Optional, Callable
+from typing import List, Optional
 from einops import rearrange
 from main.utils import int16_to_float32, float32_to_int16
 
@@ -71,9 +71,6 @@ class Model(pl.LightningModule):
 
     def step(self, batch):
         x, y, z, _ = batch
-        # z = pad_sequence([random.choice(z) for z in zs],
-        #                 batch_first=True,
-        #                 padding_value=0.)
         z_latent = self.clap_encode_audio(z)
         _, y_latent = self.onsets_encoder(y, with_info=True)
         return self.model(x, channels=y_latent['xs'][2:-1], embedding=z_latent)
@@ -97,11 +94,6 @@ def get_wandb_logger(trainer: Trainer) -> Optional[WandbLogger]:
 
     if isinstance(trainer.logger, WandbLogger):
         return trainer.logger
-
-    # if isinstance(trainer.logger, LoggerCollection):
-    #     for logger in trainer.logger:
-    #         if isinstance(logger, WandbLogger):
-    #             return logger
 
     print("WandbLogger not found.")
     return None
