@@ -44,8 +44,14 @@ def _get_cond_chunk(waveform: torch.Tensor, onset_indices) -> torch.Tensor:
         end_index = onset_indices[onset_i + 1]
     return waveform[:, start_index:end_index]
 
-def _get_slices(src, chunk_size, onset_check_length, shift_augment=False, cut_prefix=True,
-                one_chunk_per_track=False):
+def _get_slices(
+    src, 
+    chunk_size, 
+    onset_check_length, 
+    shift_augment=False, 
+    cut_prefix=True,
+    one_chunk_per_track=False
+):
     for sample in src:
         done_chunk = False
         # get length of first element in step
@@ -103,15 +109,15 @@ def _get_slices(src, chunk_size, onset_check_length, shift_augment=False, cut_pr
 
 
 def create_sfx_dataset(
-        path: str,
-        sample_rate: int,
-        chunk_size: Optional[int] = None,
-        shardshuffle: bool = False,
-        shift_augment: bool = False,
-        cut_prefix: bool = True,
-        one_chunk_per_track: bool = True,
-        onset_check_length: Optional[int] = None
-        ):
+    path: str,
+    sample_rate: int,
+    chunk_size: Optional[int] = None,
+    shardshuffle: bool = False,
+    shift_augment: bool = False,
+    cut_prefix: bool = True,
+    one_chunk_per_track: bool = True,
+    onset_check_length: Optional[int] = None
+):
 
     get_slices = partial(_get_slices, chunk_size=chunk_size, shift_augment=shift_augment, cut_prefix=cut_prefix,
                          onset_check_length=onset_check_length if onset_check_length else chunk_size,
@@ -138,13 +144,13 @@ def collate_fn(data):
 
 
 def create_fad_gt(
-        experiment_path: Union[str, Path],
-        dataset: wds.WebDataset,
-        batch_size: int = 16,
-        num_workers: int = 4,
-        sample_rate: int = 48000,
-        one_chunk_per_track: bool = False,
-        downsample_rate: Optional[int] = None
+    experiment_path: Union[str, Path],
+    dataset: wds.WebDataset,
+    batch_size: int = 16,
+    num_workers: int = 4,
+    sample_rate: int = 48000,
+    one_chunk_per_track: bool = False,
+    downsample_rate: Optional[int] = None
 ):
     experiment_path = Path(experiment_path)
     experiment_path.mkdir(exist_ok=True, parents=True)

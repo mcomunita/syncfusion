@@ -14,17 +14,6 @@ from sklearn.metrics import average_precision_score, precision_recall_curve
 # EVALUATE ACC & AP BASELINE MODEL
 ##############################################################################
 
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--gen_dir', type=str)
-parser.add_argument('--tar_dir', type=str, default='data/AMT_test/target_sound')
-parser.add_argument('--delta', type=float, default=0.1)
-parser.add_argument('--remove_head', type=float, default=None)
-parser.add_argument('--plt', action='store_true')
-parser.add_argument('--multi_delta', action='store_true')
-parser.add_argument('--longer_det', action='store_true')
-args = parser.parse_args()
-
 def extract_audio(video_path, duration=2):
     clip = VideoFileClip(video_path)
     audio = clip.audio
@@ -51,24 +40,6 @@ def detect_onset(video_dir, duration=2):
         onset_res[video_name] = onsets
         wav_res[video_name] = wav
     return onset_res, wav_res
-
-# def detect_onset(video_dir, duration=2):
-#     video_list = glob(os.path.join(video_dir, '*.mp4'))
-#     video_list.sort()
-#     onset_res = {}
-#     wav_res = {}
-#     for video_path in tqdm(video_list):
-#         video_name_without_extension, ext = os.path.splitext(os.path.basename(video_path))
-#         video_parts = video_name_without_extension.split("_to_")
-        
-#         if len(video_parts) == 2:
-#             generated_video_name = os.path.basename(video_path)
-#             onset_res[generated_video_name] = []
-#             wav = extract_audio(video_path, duration=duration)
-#             onsets = librosa.onset.onset_detect(y=wav, sr=22050, units='samples', delta=0.3)
-#             onset_res[generated_video_name] = onsets
-#             wav_res[generated_video_name] = wav
-#     return onset_res, wav_res
 
 def onset_nms(onset, confidence, window=0.05):
     onset_remain = onset.tolist()
@@ -160,6 +131,16 @@ def plot_onset(path, wav1, wav2, onsets1, onsets2, pred=None, ap=None, conf_inte
     plt.savefig(path)
     plt.cla()
     plt.close()
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--gen_dir', type=str)
+parser.add_argument('--tar_dir', type=str, default='data/AMT_test/target_sound')
+parser.add_argument('--delta', type=float, default=0.1)
+parser.add_argument('--remove_head', type=float, default=None)
+parser.add_argument('--plt', action='store_true')
+parser.add_argument('--multi_delta', action='store_true')
+parser.add_argument('--longer_det', action='store_true')
+args = parser.parse_args()
 
 if __name__ == '__main__':
     if args.longer_det:

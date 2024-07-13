@@ -14,16 +14,6 @@ from glob import glob
 # EVALUATE ACC & AP COMPLETE MODEL
 ##############################################################################
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--gen_dir', type=str)
-parser.add_argument('--tar_dir', type=str, default='data/AMT_test/target_sound')
-parser.add_argument('--delta', type=float, default=0.1)
-parser.add_argument('--remove_head', type=float, default=None)
-parser.add_argument('--plt', action='store_true')
-parser.add_argument('--multi_delta', action='store_true')
-parser.add_argument('--longer_det', action='store_true')
-args = parser.parse_args()
-
 def load_wav_audio(audio_path):
     return librosa.load(audio_path, sr=22050)[0]
 
@@ -133,6 +123,16 @@ def plot_onset(path, wav1, wav2, onsets1, onsets2, pred=None, ap=None, conf_inte
     plt.savefig(path)
     plt.cla()
     plt.close()
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--gen_dir', type=str)
+parser.add_argument('--tar_dir', type=str, default='data/AMT_test/target_sound')
+parser.add_argument('--delta', type=float, default=0.1)
+parser.add_argument('--remove_head', type=float, default=None)
+parser.add_argument('--plt', action='store_true')
+parser.add_argument('--multi_delta', action='store_true')
+parser.add_argument('--longer_det', action='store_true')
+args = parser.parse_args()
 
 if __name__ == '__main__':
     if args.longer_det:
