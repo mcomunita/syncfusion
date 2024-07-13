@@ -132,11 +132,13 @@ Check the files and change the arguments as necessary.
 ---
 ## Testing Onset Model
 
-To train the onset model run:
+To test the onset model (i.e., compute the BCE loss, Average Precision, Binary Accuracy and Number of Onsets Accuracy) run:
 ```
 CUDA_VISIBLE_DEVICES=0,1 sh script/test-onset.sh
 ```
 changing the necessary arguments.
+
+This corresponds to Table 1 in the paper.
 
 ---
 ## Testing Diffusion Model

@@ -1,7 +1,7 @@
 python script/test-onset.py test \
---config "/import/c4dm-datasets-ext/DIFF-SFX/logs/onset/train-augment/config.yaml" \
---ckpt_path "/import/c4dm-datasets-ext/DIFF-SFX/logs/onset/checkpoints-augment/last.ckpt" \
---trainer.logger.save_dir "/import/c4dm-datasets-ext/DIFF-SFX/logs/onset/test-augment-2/last" \
+--config "/path/to/logs/folder/onset/train-augment/config.yaml" \
+--ckpt_path "/path/to/logs/folder/onset/checkpoints-augment/last.ckpt" \
+--trainer.logger.save_dir "/path/to/logs/folder/onset/test-augment/last" \
 --trainer.logger.entity team-mcomunita \
 --trainer.logger.project diffusion-sfx \
 --trainer.logger.name GH-test-augment-last-0.75thresh \

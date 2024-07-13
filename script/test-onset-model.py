@@ -1,12 +1,9 @@
 import torch
 import wandb
-import os
-import argparse
 from pytorch_lightning.cli import LightningCLI
 from pytorch_lightning.strategies import DDPStrategy
 
 torch.set_float32_matmul_precision("high")
-# os.environ["WANDB_START_METHOD"] = "thread"
 
 
 def cli_main():

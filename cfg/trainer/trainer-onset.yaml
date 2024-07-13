@@ -10,13 +10,13 @@ trainer:
       project: diffusion-sfx
       id: null
       name: GH-train # if null wandb gives it name
-      save_dir: /import/c4dm-datasets-ext/DIFF-SFX/logs/onset-temp/train # dir needs to already exist
+      save_dir: /path/to/logs/folder/onset/train # dir needs to already exist
       group: ONSET-TRAIN
   
   callbacks:
     - class_path: pytorch_lightning.callbacks.ModelCheckpoint
       init_args:
-        dirpath: /import/c4dm-datasets-ext/DIFF-SFX/logs/onset-temp/checkpoints
+        dirpath: /path/to/logs/folder/onset/checkpoints
         save_last: true
         save_top_k: 1
         monitor: loss/val
