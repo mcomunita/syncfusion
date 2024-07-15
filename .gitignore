@@ -6,6 +6,9 @@ checkpoints/*
 data/*
 logs/*
 wandb/*
+.idea/
+.env
+*.log
 
 # Ignore model checkpoints
 CondFoleyGen/specvqgan/melgan_ckpt/best_netG.pt

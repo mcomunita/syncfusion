@@ -33,11 +33,25 @@ Sound design involves creatively selecting, recording, and editing sound effects
 ---
 ## Setup
 
-Install the requirements.
+Install the requirements (use Python version <3.10).
 ```
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
+```
+Afterwards, copy `.env.tmp` as `.env` and replace with your own variables (example values are random):
+
+```
+DIR_LOGS=/logs
+DIR_DATA=/data
+
+# Required if using wandb logger
+WANDB_PROJECT=audioproject
+WANDB_ENTITY=johndoe
+WANDB_API_KEY=a21dzbqlybbzccqla4txa21dzbqlybbzccqla4tx
+
+# Required if using Common Voice dataset
+HUGGINGFACE_TOKEN=hf_NUNySPyUNsmRIb9sUC4FKR2hIeacJOr4Rm
 ```
 
 ---
@@ -67,7 +81,7 @@ python script/gh_preprocess_split.py
 ```
 
 ---
-## Preprocessing for Diffusion Model
+## Preprocessing and checkpoints for Diffusion Model
 
 Pre-processed video frames, audio and annotations are organized into shards for training and validation (we use webdataset to train the diffusion model):
 
@@ -87,12 +101,18 @@ All data is available here:
 
 [https://zenodo.org/records/12634671](https://zenodo.org/records/12634671)
 
+The scripts (training, evaluation) for diffusion expect the shards to be placed in `data/DIFF-SFX-webdataset/greatest_hits`.
+Create the directories and place the shards inside.
+
+Additionally, the diffusion model requires the CLAP checkpoint [630k-audioset-best.pt](https://huggingface.co/lukewys/laion_clap/blob/main/630k-audioset-best.pt) to be placed in
+`checkpoints` folder. Download the checkpoint, create the folder `checkpoints` and place it inside.
+
 ---
 ## Training Onset Model
 
 To train the onset model WITHOUT data augmentation run:
 ```
-CUDA_VISIBLE_DEVICES=0,1 sh script/train-onset-gh.sh
+CUDA_VISIBLE_DEVICES=0 sh script/train-onset-gh.sh
 ```
 The training is configured using Lightning CLI with the following files:
 ```
@@ -105,7 +125,7 @@ Check the files and change the arguments as necessary.
 ---
 To train the onset model WITH data augmentation run:
 ```
-CUDA_VISIBLE_DEVICES=0,1 sh script/train-onset-gh-augment.sh
+CUDA_VISIBLE_DEVICES=0 sh script/train-onset-gh-augment.sh
 ```
 The training is configured using Lightning CLI with the following files:
 ```
@@ -118,9 +138,10 @@ Check the files and change the arguments as necessary.
 ---
 ## Training Diffusion Model
 
+
 To train the diffusion model run:
 ```
-CUDA_VISIBLE_DEVICES=0,1 sh script/train-diffusion-gh.sh
+CUDA_VISIBLE_DEVICES=0 sh script/train-diffusion-model-gh.sh
 ```
 The training is configured using Hydra with the following files:
 ```
