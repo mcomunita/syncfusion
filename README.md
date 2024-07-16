@@ -4,7 +4,7 @@
 
 **Multimodal Onset-Synchronized Video-to-Audio Foley Synthesis**
 
-[Paper](https://arxiv.org/abs/2211.00497) | [Webpage](https://mcomunita.github.io/gcn-tfilm_page/)
+[Paper](https://arxiv.org/abs/2211.00497) | [Webpage](https://mcomunita.github.io/syncfusion-webpage/)
 
 [Marco Comunità](https://mcomunita.github.io/)<sup>1</sup>, [Riccardo F. Gramaccioni](https://www.linkedin.com/in/riccardo-fosco-gramaccioni/)<sup>2</sup>, [Emilian Postolache](https://emilianpostolache.com/)<sup>2</sup><br>[Emanuele Rodolà,](https://www.linkedin.com/in/erodola/)<sup>2</sup>, [Danilo Comminiello](https://www.linkedin.com/in/danilocomminiello/)<sup>2</sup>, [Joshua D. Reiss](http://www.eecs.qmul.ac.uk/~josh/)<sup>1</sup>
 
