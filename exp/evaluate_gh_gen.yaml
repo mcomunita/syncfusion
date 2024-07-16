@@ -28,7 +28,7 @@ experiment:
   downsample_rate: 22050
 
   dataset:
-    _target_: main.dataset_gh.create_sfx_dataset
+    _target_: main.dataset_diffusion.create_sfx_dataset
     path: ${dataset_path}
     sample_rate: ${sample_rate}
     chunk_size: ${gen_length}
