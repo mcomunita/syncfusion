@@ -81,7 +81,7 @@ python script/gh_preprocess_split.py
 ```
 
 ---
-## Preprocessing and checkpoints for Diffusion Model
+## Preprocessing and CLAP checkpoint for Diffusion Model
 
 Pre-processed video frames, audio and annotations are organized into shards for training and validation (we use webdataset to train the diffusion model):
 
@@ -108,7 +108,10 @@ Additionally, the diffusion model requires the CLAP checkpoint [630k-audioset-be
 `checkpoints` folder. Download the checkpoint, create the folder `checkpoints` and place it inside.
 
 ---
-## Training Onset Model
+
+##  Training
+
+### Training Onset Model
 
 To train the onset model WITHOUT data augmentation run:
 ```
@@ -136,7 +139,7 @@ cfg/trainer/trainer-onset-augment.yaml
 Check the files and change the arguments as necessary.
 
 ---
-## Training Diffusion Model
+### Diffusion Model
 
 
 To train the diffusion model run:
@@ -151,28 +154,46 @@ exp/train_diffusion_gh.yaml
 Check the files and change the arguments as necessary.
 
 ---
-## Testing Onset Model
+## Checkpoints
 
+You can find the checkpoints for both, Onset and Diffusion models on Zenodo:
+[https://zenodo.org/records/12634630](https://zenodo.org/records/12634630).
+Such checkpoints are required for reproducing the results in the paper and should
+be placed in the `checkpoints` directory.
+---
+
+## Testing 
+
+### Onset Model
 To test the onset model (i.e., compute the BCE loss, Average Precision, Binary Accuracy and Number of Onsets Accuracy) run:
 ```
-CUDA_VISIBLE_DEVICES=0,1 sh script/test-onset.sh
+CUDA_VISIBLE_DEVICES=0 sh script/test-onset.sh
 ```
 changing the necessary arguments.
 
 This corresponds to Table 1 in the paper.
 
 ---
-## Testing Diffusion Model
+###  Diffusion Model
 
-Coming...
+First, check that `epoch=784-valid_loss=0.008.ckpt` is present in `checkpoints` folder and
+`test_shard_1.tar`, `test_onset_preds.tar`, `test_onset_augment_preds.tar` in `data/DIFF-SFX-webdataset/greatest_hits`.
 
----
-## Checkpoints
+Following, prepare the GT data for FAD experiments by running:
+- `CUDA_VISIBLE_DEVICES=0 sh script/run_prepare_gh_gt.sh` (GT data for diffusion only experiments)
+- `CUDA_VISIBLE_DEVICES=0 sh script/run_prepare_gh_gt_pred.sh` (GT data for diffusion + predicted onsets experiments)
 
-You can find the checkpoints for both, Onset and Diffusion models on Zenodo:
-[https://zenodo.org/records/12634630](https://zenodo.org/records/12634630)
+The scripts create the GT data in `output/experiments/gh-gt` and `output/experiments/gh-gt-pred` 
 
----
+You can now run:
+
+- `CUDA_VISIBLE_DEVICES=0 sh script/run_evaluate_gh_gen.sh` (evaluates FAD for diffusion only conditioning with audio (random onsets); Table 2)
+- `CUDA_VISIBLE_DEVICES=0 sh script/run_evaluate_gh_gen_text.sh` (evaluates FAD for diffusion only conditioning with text (random onsets); Table 2)
+- `CUDA_VISIBLE_DEVICES=0 sh script/run_evaluate_gh_gen_text.sh` (evaluates FAD for diffusion conditioning with predicted onsets and audio; Table 3)
+- `CUDA_VISIBLE_DEVICES=0 sh script/run_evaluate_gh_gen_text.sh` (evaluates FAD for diffusion conditioning with predicted onsets obtained via augmented model and audio; Table 3)
+
+[!WARNING]
+You could need to reduce the batch size in the `exp` files, depending on your available GPU memory. Results may vary because of this. Experiments in paper performed with bs=10.  
 ## Credits
 
 [https://github.com/archinetai/audio-diffusion-pytorch-trainer](https://github.com/archinetai/audio-diffusion-pytorch-trainer)

@@ -1,3 +1,9 @@
+import os
+import sys
+module_path = os.path.abspath(os.path.join('.'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
+
 from pathlib import Path
 
 import dotenv
@@ -11,7 +17,7 @@ dotenv.load_dotenv(override=True)
 log = utils.get_logger(__name__)
 
 
-@hydra.main(config_path=".", config_name="config.yaml", version_base=None)
+@hydra.main(config_path="..", config_name="config.yaml", version_base=None)
 def main(config: DictConfig):
     experiment_path = Path(config.experiment_path)
     pl.seed_everything(config.seed)

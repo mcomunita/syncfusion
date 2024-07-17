@@ -44,14 +44,8 @@ def _get_cond_chunk(waveform: torch.Tensor, onset_indices) -> torch.Tensor:
         end_index = onset_indices[onset_i + 1]
     return waveform[:, start_index:end_index]
 
-def _get_slices(
-    src, 
-    chunk_size, 
-    onset_check_length, 
-    shift_augment=False, 
-    cut_prefix=True,
-    one_chunk_per_track=False
-):
+def _get_slices(src, chunk_size, onset_check_length, shift_augment=False, cut_prefix=True,
+                one_chunk_per_track=False):
     for sample in src:
         done_chunk = False
         # get length of first element in step
@@ -62,7 +56,10 @@ def _get_slices(
             pred_onset_metadata = onset_metadata
 
         onset_idx = [int(k * sr) for k in onset_metadata.keys()]
+        texts = [text for text in onset_metadata.values() if 'None' not in text]
         assert onset_idx
+        assert texts
+        text = random.choice(texts)
         onset = torch.zeros_like(wav)
         onset[:, onset_idx] = 1.0
 
@@ -105,19 +102,19 @@ def _get_slices(
                 wav_chunk[:, :onset_indices[0]] = 0.
             cond_chunk = _get_cond_chunk(wav_chunk, onset_indices)
             done_chunk = True
-            yield wav_chunk, pred_onset_chunk, cond_chunk, filename
+            yield wav_chunk, pred_onset_chunk, cond_chunk, text, filename
 
 
 def create_sfx_dataset(
-    path: str,
-    sample_rate: int,
-    chunk_size: Optional[int] = None,
-    shardshuffle: bool = False,
-    shift_augment: bool = False,
-    cut_prefix: bool = True,
-    one_chunk_per_track: bool = True,
-    onset_check_length: Optional[int] = None
-):
+        path: str,
+        sample_rate: int,
+        chunk_size: Optional[int] = None,
+        shardshuffle: bool = False,
+        shift_augment: bool = False,
+        cut_prefix: bool = True,
+        one_chunk_per_track: bool = True,
+        onset_check_length: Optional[int] = None
+        ):
 
     get_slices = partial(_get_slices, chunk_size=chunk_size, shift_augment=shift_augment, cut_prefix=cut_prefix,
                          onset_check_length=onset_check_length if onset_check_length else chunk_size,
@@ -132,7 +129,7 @@ def create_sfx_dataset(
 
 
 def collate_fn(data):
-    waveforms, onset_tensors, cond_chunks, filenames = zip(*data)
+    waveforms, onset_tensors, cond_chunks, texts, filenames = zip(*data)
     # Stack waveforms and onset_tensors directly
     waveforms_batch = torch.stack(waveforms, dim=0)
     onset_tensors_batch = torch.stack(onset_tensors, dim=0)
@@ -140,17 +137,17 @@ def collate_fn(data):
     max_length = max(chunk.size(1) for chunk in cond_chunks)
     cond_chunks_padded = [torch.nn.functional.pad(chunk, (0, max_length - chunk.size(1))) for chunk in cond_chunks]
     cond_chunks_batch = torch.stack(cond_chunks_padded, dim=0)
-    return waveforms_batch, onset_tensors_batch, cond_chunks_batch, filenames
+    return waveforms_batch, onset_tensors_batch, cond_chunks_batch, texts, filenames
 
 
-def create_fad_gt(
-    experiment_path: Union[str, Path],
-    dataset: wds.WebDataset,
-    batch_size: int = 16,
-    num_workers: int = 4,
-    sample_rate: int = 48000,
-    one_chunk_per_track: bool = False,
-    downsample_rate: Optional[int] = None
+def prepare_gt_for_fad(
+        experiment_path: Union[str, Path],
+        dataset: wds.WebDataset,
+        batch_size: int = 16,
+        num_workers: int = 4,
+        sample_rate: int = 48000,
+        one_chunk_per_track: bool = False,
+        downsample_rate: Optional[int] = None
 ):
     experiment_path = Path(experiment_path)
     experiment_path.mkdir(exist_ok=True, parents=True)
@@ -196,16 +193,3 @@ def create_fad_gt(
             else:
                 torchaudio.save(experiment_path / f"{filenames[i].split('/')[-1]}.wav", output, sample_rate=output_sr)
 
-
-if __name__ == '__main__':
-    dataset_train = create_sfx_dataset("data/DIFF-SFX-webdataset/greatest_hits/test_onset_preds.tar",
-                                       sample_rate=48000, chunk_size=262144, shardshuffle=True)
-    dl = DataLoader(
-        dataset=dataset_train,
-        batch_size=8,
-        num_workers=0,
-        pin_memory=False,
-        drop_last=True,
-        collate_fn=collate_fn
-    )
-    waveform, onset, cond = next(iter(dl))
