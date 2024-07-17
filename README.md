@@ -160,8 +160,8 @@ You can find the checkpoints for both, Onset and Diffusion models on Zenodo:
 [https://zenodo.org/records/12634630](https://zenodo.org/records/12634630).
 Such checkpoints are required for reproducing the results in the paper and should
 be placed in the `checkpoints` directory.
----
 
+---
 ## Testing 
 
 ### Onset Model
