@@ -73,12 +73,13 @@ callbacks:
 loggers:
   wandb:
     _target_: pytorch_lightning.loggers.wandb.WandbLogger
-    project: ${oc.env:WANDB_PROJECT}
     entity: ${oc.env:WANDB_ENTITY}
-    # offline: False  # set True to store all logs only locally
+    project: ${oc.env:WANDB_PROJECT}
+    id: null
+    name: GH-train # if null wandb gives it name
     job_type: "train"
-    group: ""
     save_dir: ${logs_dir}
+    group: DIFF-TRAIN
 
 trainer:
   _target_: pytorch_lightning.Trainer

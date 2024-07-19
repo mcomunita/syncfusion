@@ -58,8 +58,11 @@ def _get_slices(src, chunk_size, onset_check_length, shift_augment=False, cut_pr
         onset_idx = [int(k * sr) for k in onset_metadata.keys()]
         texts = [text for text in onset_metadata.values() if 'None' not in text]
         assert onset_idx
-        assert texts
-        text = random.choice(texts)
+        # assert texts
+        if not texts:
+            text = ""
+        else:
+            text = random.choice(texts)
         onset = torch.zeros_like(wav)
         onset[:, onset_idx] = 1.0
 
@@ -159,7 +162,7 @@ def prepare_gt_for_fad(
     chunk_id = 0
 
     for batch_idx, batch in enumerate(loader):
-        waveforms, _, _, filenames = batch
+        waveforms, _, _, _, filenames = batch
         if not one_chunk_per_track:
             last_chunk_batch_id = chunk_id + batch[0].shape[0] - 1
             last_chunk_path = experiment_path / f"{last_chunk_batch_id}.wav"

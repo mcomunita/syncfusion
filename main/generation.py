@@ -38,11 +38,13 @@ def generate_dataset(
                         collate_fn=collate_fn)
 
     if model_path:
+        print(f"Loading model from {model_path}...")
         checkpoint = torch.load(model_path, map_location=device)
         model.load_state_dict(checkpoint['state_dict'])
     model.to(device)
 
     # Main generation loop
+    print("Generating...")
     chunk_id = 0
     for batch_idx, batch in enumerate(loader):
         x, y, z, text, filenames = batch

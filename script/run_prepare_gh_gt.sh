@@ -1,4 +1,4 @@
 # creates ground truth data for the diffusion only experiments
-python script/evaluate.py \
+python script/evaluate_diffusion.py \
 exp=prepare_gh_gt \
-experiment.dataset.path="data/DIFF-SFX-webdataset/greatest_hits/test_shard_1.tar"
+experiment.dataset.path="data/greatest-hits/webdataset/test_shard_1.tar"

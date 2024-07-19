@@ -1,17 +1,17 @@
 data:
   class_path: main.datamodule_onset.GreatestHitsDatamodule
   init_args:
-    root_dir: /path/to/processed/dataset/folder/GREATEST-HITS-DATASET/mic-mp4-processed
+    root_dir: data/greatest-hits/mic-mp4-processed
     
-    train_split_file_path: /path/to/train/set/filelist/GREATEST-HITS-DATASET/mic-mp4-processed/train.txt
+    train_split_file_path: data/greatest-hits/mic-mp4-processed/train.txt
     train_data_to_use: 1.0
     train_frames_transforms: null
 
-    val_split_file_path: /path/to/validation/set/filelist/GREATEST-HITS-DATASET/mic-mp4-processed/val.txt
+    val_split_file_path: data/greatest-hits/mic-mp4-processed/val.txt
     val_data_to_use: 1.0
     val_frames_transforms: null
 
-    test_split_file_path: /path/to/test/set/filelist/GREATEST-HITS-DATASET/mic-mp4-processed/test.txt
+    test_split_file_path: data/greatest-hits/mic-mp4-processed/test.txt
     test_data_to_use: 1.0
     test_frames_transforms: null
     

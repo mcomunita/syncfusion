@@ -3,13 +3,14 @@
 defaults:
   - model: diffusion
 
-dataset_path: ${work_dir}/data/greatest_hit/test_shard_1.tar
-experiment_path: ${work_dir}/output/experiments/gh-gen
+dataset_path: None # ${work_dir}/data/greatest_hit/test_shard_1.tar
+experiment_path: None # ${work_dir}/output/experiments/gh-gen
 gen_length: 262144
 cut_length: 96000
 sample_rate: 48000
 one_chunk_per_track: True
 
+# data generation - comment out if you already have the generated data
 experiment:
   _target_: main.generation.generate_dataset
   _partial_: True
@@ -19,7 +20,7 @@ experiment:
   device: 'cuda'
   batch_size: 10  # < Change to best fit your architecture
   num_steps: 150
-  embedding_scale: 7.5
+  embedding_scale: 2.0
   sample_rate: ${sample_rate}
   one_chunk_per_track: ${one_chunk_per_track}
   length: ${gen_length}
@@ -38,8 +39,9 @@ experiment:
     onset_check_length: ${cut_length}
     shardshuffle: False
 
+# data evaluation
 evaluation:
-  _target_: evaluation.evaluate_fad.evaluate_fad
+  _target_: main.evaluation.evaluate_fad
   _partial_: True
   experiment_path: ${experiment_path}
   gt_path: ${work_dir}/output/experiments/gh-gt

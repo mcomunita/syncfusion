@@ -3,14 +3,13 @@
 defaults:
   - model: diffusion
 
-dataset_path: None # ${work_dir}/data/greatest_hit/test_shard_1.tar
-experiment_path: None # ${work_dir}/output/experiments/gh-gen-text
+dataset_path: None # ${work_dir}/data/greatest_hit/test_onset_preds.tar
+experiment_path: None # ${work_dir}/output/experiments/gh-gen-pred
 gen_length: 262144
 cut_length: 96000
 sample_rate: 48000
 one_chunk_per_track: True
 
-# data generation - comment out if you already have the generated data
 experiment:
   _target_: main.generation.generate_dataset
   _partial_: True
@@ -18,17 +17,15 @@ experiment:
   model: ${model}
   model_path: null
   device: 'cuda'
-  batch_size: 8  # < Change to best fit your architecture
+  batch_size: 10  # < Change to best fit your architecture
   num_steps: 150
   embedding_scale: 2.0
   sample_rate: ${sample_rate}
   one_chunk_per_track: ${one_chunk_per_track}
   length: ${gen_length}
   cut_length: ${cut_length}
-  cut_prefix: True
-  cond_text: True
+  cut_prefix: False
   downsample_rate: 22050
-  save_cond: False
 
   dataset:
     _target_: main.dataset_diffusion.create_sfx_dataset
@@ -41,9 +38,8 @@ experiment:
     onset_check_length: ${cut_length}
     shardshuffle: False
 
-# data evaluation
 evaluation:
   _target_: main.evaluation.evaluate_fad
   _partial_: True
   experiment_path: ${experiment_path}
-  gt_path: ${work_dir}/output/experiments/gh-gt
+  gt_path: ${work_dir}/output/experiments/gh-gt-pred

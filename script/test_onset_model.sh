@@ -1,0 +1,12 @@
+python script/test_onset_model.py test \
+--config "logs/onset/train/config.yaml" \
+--ckpt_path "logs/onset/checkpoints/epoch=9-step=3600-val=1.446.ckpt" \
+--trainer.logger.save_dir "logs/onset/test/best" \
+--trainer.logger.entity entity-name \
+--trainer.logger.project syncfusion \
+--trainer.logger.name GH-test-best \
+--trainer.logger.group ONSET-TEST \
+--trainer.accelerator gpu \
+--trainer.strategy auto \
+--trainer.devices=1 \
+--data.test_data_to_use 1.0

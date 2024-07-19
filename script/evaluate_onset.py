@@ -143,15 +143,10 @@ if __name__ == '__main__':
         tar_npy_path = args.tar_dir + f'_onsets_wav.npy'
         duration = 2
     gen_npy_path = args.gen_dir + '_onsets_wav.npy'
-    # if os.path.exists(tar_npy_path):
-    #     print(tar_npy_path)
-    #     onset_list1, wav_list1 = np.load(tar_npy_path, allow_pickle=True)
-    # else:
+    
     onset_list1, wav_list1 = detect_onset(args.tar_dir, duration=duration)
     np.save(tar_npy_path, (onset_list1, wav_list1))
-    # if os.path.exists(gen_npy_path):
-    #     onset_list2, wav_list2 = np.load(gen_npy_path, allow_pickle=True)
-    # else:
+    
     onset_list2, wav_list2 = detect_onset(args.gen_dir, duration=duration)
     np.save(gen_npy_path, (onset_list2, wav_list2))
     if args.plt:

@@ -5,11 +5,10 @@ __pycache__
 checkpoints/*
 data/*
 logs/*
+output/*
 wandb/*
-.idea/
 .env
 *.log
-output/*
 
 # Ignore model checkpoints
 CondFoleyGen/specvqgan/melgan_ckpt/best_netG.pt

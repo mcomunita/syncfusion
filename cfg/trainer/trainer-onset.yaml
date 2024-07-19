@@ -6,23 +6,24 @@ trainer:
   logger:
     class_path: pytorch_lightning.loggers.WandbLogger
     init_args:
-      entity: team-mcomunita
-      project: diffusion-sfx
+      entity: entity-name
+      project: syncfusion
       id: null
       name: GH-train # if null wandb gives it name
-      save_dir: /path/to/logs/folder/onset/train # dir needs to already exist
+      save_dir: logs/onset/train # dir needs to already exist
       group: ONSET-TRAIN
   
   callbacks:
     - class_path: pytorch_lightning.callbacks.ModelCheckpoint
       init_args:
-        dirpath: /path/to/logs/folder/onset/checkpoints
+        dirpath: logs/onset/checkpoints
         save_last: true
         save_top_k: 1
         monitor: loss/val
         mode: min
-        every_n_epochs: 10
-        filename: "{epoch}-{step}-{loss/val:.3f}"
+        every_n_epochs: 5
+        filename: "epoch={epoch}-val={loss/val:.3f}"
+        auto_insert_metric_name: false
     
     - class_path: pytorch_lightning.callbacks.ModelSummary
       init_args:

@@ -44,6 +44,7 @@ class Model(pl.LightningModule):
         self.onsets_encoder: Encoder1d = onsets_encoder
 
         # Clap embedder
+        print(f"Loading CLAP embedder from {embedder_checkpoint}...")
         self.clap = embedder
         self.clap.load_ckpt(embedder_checkpoint)
         for param in self.clap.parameters():
@@ -70,7 +71,7 @@ class Model(pl.LightningModule):
         return self.clap.get_text_embedding(text, use_tensor=True).unsqueeze(1)
 
     def step(self, batch):
-        x, y, z, _ = batch
+        x, y, z, _, _ = batch # waveforms_batch, onset_tensors_batch, cond_chunks_batch, texts, filenames
         z_latent = self.clap_encode_audio(z)
         _, y_latent = self.onsets_encoder(y, with_info=True)
         return self.model(x, channels=y_latent['xs'][2:-1], embedding=z_latent)
@@ -191,7 +192,7 @@ class SampleLogger(Callback):
         noise = torch.randn(
             (self.num_items, self.channels, self.length), device=pl_module.device
         )
-        _, y, z, _ = batch
+        _, y, z, _, _ = batch
         _, y_latent = onsets_encoder(y[:self.num_items, :, :], with_info=True)
         z_latent = pl_module.clap_encode_audio(z[:self.num_items, :, :])
 

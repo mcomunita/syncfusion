@@ -1,9 +1,9 @@
 data:
   class_path: main.datamodule_onset.GreatestHitsDatamodule
   init_args:
-    root_dir: /path/to/processed/dataset/folder/GREATEST-HITS-DATASET/mic-mp4-processed
+    root_dir: data/greatest-hits/mic-mp4-processed
     
-    train_split_file_path: /path/to/train/set/filelist/GREATEST-HITS-DATASET/mic-mp4-processed/train.txt
+    train_split_file_path: data/greatest-hits/mic-mp4-processed/mic-mp4-processed/train.txt
     train_data_to_use: 1.0
     train_frames_transforms:
       class_path: torchvision.transforms.Compose
@@ -27,7 +27,7 @@ data:
             mean: [0.485, 0.456, 0.406]
             std: [0.229, 0.224, 0.225]
 
-    val_split_file_path: /path/to/validation/set/filelist/GREATEST-HITS-DATASET/mic-mp4-processed/val.txt
+    val_split_file_path: data/greatest-hits/mic-mp4-processed/mic-mp4-processed/val.txt
     val_data_to_use: 1.0
     val_frames_transforms:
       class_path: torchvision.transforms.Compose
@@ -51,23 +51,9 @@ data:
               mean: [0.485, 0.456, 0.406]
               std: [0.229, 0.224, 0.225]
 
-    test_split_file_path: /path/to/test/set/filelist/GREATEST-HITS-DATASET/mic-mp4-processed/test.txt
+    test_split_file_path: data/greatest-hits/mic-mp4-processed/test.txt
     test_data_to_use: 1.0
     test_frames_transforms: null
-      # class_path: torchvision.transforms.Compose
-      # init_args:
-      #   transforms:
-      #     - class_path: torchvision.transforms.Resize
-      #       init_args:
-      #         size: 128
-      #         antialias: True
-      #     - class_path: torchvision.transforms.CenterCrop
-      #       init_args:
-      #         size: 112
-      #     - class_path: torchvision.transforms.Normalize
-      #       init_args:
-      #         mean: [0.485, 0.456, 0.406]
-      #         std: [0.229, 0.224, 0.225]
     
     chunk_length_in_seconds: 2.0
 

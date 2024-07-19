@@ -31,34 +31,38 @@ Sound design involves creatively selecting, recording, and editing sound effects
 ```
 
 ---
+
 ## Setup
 
-Install the requirements (use Python version <3.10).
+Install the requirements (use Python version < 3.10).
 ```
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
+
+[!WARNING]
+CLAP might give errors with `transformers` versions other than `4.30.2`.
+
 Afterwards, copy `.env.tmp` as `.env` and replace with your own variables (example values are random):
 
 ```
-DIR_LOGS=/logs
+DIR_LOGS=/logs/diffusion
 DIR_DATA=/data
 
 # Required if using wandb logger
 WANDB_PROJECT=audioproject
 WANDB_ENTITY=johndoe
 WANDB_API_KEY=a21dzbqlybbzccqla4txa21dzbqlybbzccqla4tx
-
-# Required if using Common Voice dataset
-HUGGINGFACE_TOKEN=hf_NUNySPyUNsmRIb9sUC4FKR2hIeacJOr4Rm
 ```
 
 ---
+
 ## Dataset
 You can find the GREATEST HITS dataset page at [https://andrewowens.com/vis/](https://andrewowens.com/vis/), where you can download the [high-res](https://web.eecs.umich.edu/~ahowens/vis/vis-data.zip) or [low-res](https://web.eecs.umich.edu/~ahowens/vis/vis-data-256.zip) videos and annotations.
 
 ---
+
 ## Pre-processing for Onset Model
 To prepare the dataset for training you have to pre-process the videos and annotations, as well as prepare the data split.
 
@@ -69,9 +73,9 @@ python script/gh_preprocess_videos.py
 ```
 
 ### Annotations
-To extract the annotation run (setting the arguments as necessary):
+To extract the annotations run (setting the arguments as necessary):
 ```
-python script/gh_preprocess_videos.py
+python script/gh_preprocess_annotations.py
 ```
 
 ### Data Splits
@@ -80,8 +84,12 @@ To prepare the data splits run (setting the arguments as necessary):
 python script/gh_preprocess_split.py
 ```
 
+The scripts (training, testing) for the onset model expect the pre-processed files to be placed in `data/greatest-hits/mic-mp4-processed`.
+Create the directories and place the files inside or use a symbolic link `ln -s path/to/processed/folder`
+
 ---
-## Preprocessing and CLAP checkpoint for Diffusion Model
+
+## Pre-processing and CLAP checkpoint for Diffusion Model
 
 Pre-processed video frames, audio and annotations are organized into shards for training and validation (we use webdataset to train the diffusion model):
 
@@ -101,21 +109,21 @@ All data is available here:
 
 [https://zenodo.org/records/12634671](https://zenodo.org/records/12634671)
 
-The scripts (training, evaluation) for diffusion expect the shards to be placed in `data/DIFF-SFX-webdataset/greatest_hits`.
-Create the directories and place the shards inside.
+The scripts (training, evaluation) for diffusion expect the shards to be placed in `data/greatest-hits/webdataset`.
+Create the directories and place the shards inside or use a symbolic link `ln -s path/to/shards/folder`
 
 Additionally, the diffusion model requires the CLAP checkpoint [630k-audioset-best.pt](https://huggingface.co/lukewys/laion_clap/blob/main/630k-audioset-best.pt) to be placed in
-`checkpoints` folder. Download the checkpoint, create the folder `checkpoints` and place it inside.
+`checkpoints` folder. Download the checkpoint, create the folder `checkpoints` and place it inside or use a symbolic link `ln -s path/to/clap-checkpoint/folder`
 
 ---
 
-##  Training
+## Training
 
-### Training Onset Model
+### Onset Model
 
 To train the onset model WITHOUT data augmentation run:
 ```
-CUDA_VISIBLE_DEVICES=0 sh script/train-onset-gh.sh
+CUDA_VISIBLE_DEVICES=0 sh script/train_onset_model_gh.sh
 ```
 The training is configured using Lightning CLI with the following files:
 ```
@@ -126,9 +134,10 @@ cfg/trainer/trainer-onset.yaml
 Check the files and change the arguments as necessary.
 
 ---
+
 To train the onset model WITH data augmentation run:
 ```
-CUDA_VISIBLE_DEVICES=0 sh script/train-onset-gh-augment.sh
+CUDA_VISIBLE_DEVICES=0 sh script/train_onset_model_gh_augment.sh
 ```
 The training is configured using Lightning CLI with the following files:
 ```
@@ -139,12 +148,13 @@ cfg/trainer/trainer-onset-augment.yaml
 Check the files and change the arguments as necessary.
 
 ---
+
 ### Diffusion Model
 
-
 To train the diffusion model run:
+
 ```
-CUDA_VISIBLE_DEVICES=0 sh script/train-diffusion-model-gh.sh
+CUDA_VISIBLE_DEVICES=0 sh script/train_diffusion_model_gh.sh
 ```
 The training is configured using Hydra with the following files:
 ```
@@ -154,6 +164,7 @@ exp/train_diffusion_gh.yaml
 Check the files and change the arguments as necessary.
 
 ---
+
 ## Checkpoints
 
 You can find the checkpoints for both, Onset and Diffusion models on Zenodo:
@@ -162,40 +173,53 @@ Such checkpoints are required for reproducing the results in the paper and shoul
 be placed in the `checkpoints` directory.
 
 ---
-## Testing 
+
+## Testing and Evaluation
 
 ### Onset Model
-To test the onset model (i.e., compute the BCE loss, Average Precision, Binary Accuracy and Number of Onsets Accuracy) run:
+To test the onset model (i.e., BCE loss, Average Precision, Binary Accuracy and Number of Onsets Accuracy) run:
 ```
-CUDA_VISIBLE_DEVICES=0 sh script/test-onset.sh
+CUDA_VISIBLE_DEVICES=0 sh script/test_onset_model.sh
 ```
 changing the necessary arguments.
 
 This corresponds to Table 1 in the paper.
 
 ---
-###  Diffusion Model
+
+### Diffusion Model
 
 First, check that `epoch=784-valid_loss=0.008.ckpt` is present in `checkpoints` folder and
-`test_shard_1.tar`, `test_onset_preds.tar`, `test_onset_augment_preds.tar` in `data/DIFF-SFX-webdataset/greatest_hits`.
+`test_shard_1.tar`, `test_onset_preds.tar`, `test_onset_augment_preds.tar` in `data/greatest-hits/webdataset`.
 
 Following, prepare the GT data for FAD experiments by running:
+
 - `CUDA_VISIBLE_DEVICES=0 sh script/run_prepare_gh_gt.sh` (GT data for diffusion only experiments)
 - `CUDA_VISIBLE_DEVICES=0 sh script/run_prepare_gh_gt_pred.sh` (GT data for diffusion + predicted onsets experiments)
 
-The scripts create the GT data in `output/experiments/gh-gt` and `output/experiments/gh-gt-pred` 
+The scripts create the GT data in `output/experiments/gh-gt`, `output/experiments/gh-gt-pred` and `output/experiments/gh-gt-pred-augment`.
 
 You can now run:
 
 - `CUDA_VISIBLE_DEVICES=0 sh script/run_evaluate_gh_gen.sh` (evaluates FAD for diffusion only conditioning with audio (random onsets); Table 2)
 - `CUDA_VISIBLE_DEVICES=0 sh script/run_evaluate_gh_gen_text.sh` (evaluates FAD for diffusion only conditioning with text (random onsets); Table 2)
-- `CUDA_VISIBLE_DEVICES=0 sh script/run_evaluate_gh_gen_text.sh` (evaluates FAD for diffusion conditioning with predicted onsets and audio; Table 3)
-- `CUDA_VISIBLE_DEVICES=0 sh script/run_evaluate_gh_gen_text.sh` (evaluates FAD for diffusion conditioning with predicted onsets obtained via augmented model and audio; Table 3)
+- `CUDA_VISIBLE_DEVICES=0 sh script/run_evaluate_gh_gen_pred.sh` (evaluates FAD for diffusion conditioning with predicted onsets and audio; Table 3)
+- `CUDA_VISIBLE_DEVICES=0 sh script/run_evaluate_gh_gen_pred_augment.sh` (evaluates FAD for diffusion conditioning with predicted onsets obtained via augmented model and audio; Table 3)
 
 [!WARNING]
-You could need to reduce the batch size in the `exp` files, depending on your available GPU memory. Results may vary because of this. Experiments in paper performed with bs=10.  
+You could need to reduce the batch size in the `exp` files, depending on your available GPU memory. Results may vary because of this. Experiments in paper performed with bs=10.
+
+To compute the onset metrics for the diffusion model (i.e., Average Precision, Binary Accuracy and Number of Onsets Accuracy) run:
+
+- `sh script/evaluate_onset.sh` (evaluates metrics from generated audio using GT onsets and audio conditioning; Table 2)
+- `sh script/evaluate_onset_text.sh` (evaluates metrics from generated audio using GT onsets and text conditioning; Table 2)
+- `sh script/evaluate_onset_pred.sh` (evaluates metrics from generated audio using predicted onsets and audio conditioning; Table 3)
+- `sh script/evaluate_onset_pred_augment.sh` (evaluates metrics from generated audio using predicted onsets via augmented model and audio conditioning; Table 3)
+
+---
+
 ## Credits
 
-[https://github.com/archinetai/audio-diffusion-pytorch-trainer](https://github.com/archinetai/audio-diffusion-pytorch-trainer)
-[https://github.com/XYPB/CondFoleyGen](https://github.com/XYPB/CondFoleyGen)
+[https://github.com/archinetai/audio-diffusion-pytorch-trainer](https://github.com/archinetai/audio-diffusion-pytorch-trainer)\
+[https://github.com/XYPB/CondFoleyGen](https://github.com/XYPB/CondFoleyGen)\
 [https://andrewowens.com/vis/](https://andrewowens.com/vis/)

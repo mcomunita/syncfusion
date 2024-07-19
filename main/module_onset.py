@@ -11,8 +11,6 @@ import pytorch_lightning as pl
 
 from sklearn.metrics import average_precision_score
 from natsort import natsorted
-from torch.utils.data import DataLoader
-from main.dataset_onset import GreatestHitsDataset
 from main.onset_net import VideoOnsetNet
 
 
@@ -130,6 +128,7 @@ class Model(pl.LightningModule):
         self.concat_annotations()
 
     def log_metrics(self, metrics, mode="val"):
+        print("Logging metrics...")
         for key, value in metrics.items():
             self.log(
                 f"metrics/{mode}/{key}",
@@ -142,6 +141,7 @@ class Model(pl.LightningModule):
             )
 
     def log_annotations(self, batch_idx, batch, mode="test"):
+        print("Logging annotations...")
         video_name = batch['video_name']
         start_frame = batch['start_frame']
         end_frame = batch['end_frame']
@@ -188,6 +188,7 @@ class Model(pl.LightningModule):
         """merge content of all files with the same video name
         and save to a single file
         """
+        print("Concatenating annotations...")
         run_dir = self.logger.experiment.dir
         target_dir = os.path.join(run_dir, f"media/annotations/target")
         pred_dir = os.path.join(run_dir, f"media/annotations/pred")

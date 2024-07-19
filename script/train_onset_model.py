@@ -7,7 +7,7 @@ if module_path not in sys.path:
 import torch
 import wandb
 from pytorch_lightning.cli import LightningCLI
-from pytorch_lightning.strategies import DDPStrategy
+# from pytorch_lightning.strategies import DDPStrategy
 
 
 torch.set_float32_matmul_precision("high")
@@ -17,7 +17,7 @@ def cli_main():
     _ = LightningCLI(
         trainer_defaults={
             "accelerator": "gpu",
-            "strategy": "ddp",
+            # "strategy": "ddp",
             # "strategy": DDPStrategy(find_unused_parameters=False),
             "devices": -1,
             "num_sanity_val_steps": 2,
@@ -30,10 +30,11 @@ def cli_main():
         },
         save_config_kwargs={
             # "config_filename": "config.yaml",
-            "overwrite": True,
+            "overwrite": False,
         }
     )
 
 
 if __name__ == "__main__":
     cli_main()
+    wandb.finish()
