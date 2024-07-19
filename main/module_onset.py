@@ -128,7 +128,6 @@ class Model(pl.LightningModule):
         self.concat_annotations()
 
     def log_metrics(self, metrics, mode="val"):
-        print("Logging metrics...")
         for key, value in metrics.items():
             self.log(
                 f"metrics/{mode}/{key}",
@@ -141,7 +140,6 @@ class Model(pl.LightningModule):
             )
 
     def log_annotations(self, batch_idx, batch, mode="test"):
-        print("Logging annotations...")
         video_name = batch['video_name']
         start_frame = batch['start_frame']
         end_frame = batch['end_frame']
