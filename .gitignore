@@ -2,13 +2,16 @@
 .vscode
 .DS_Store
 __pycache__
-checkpoints/*
-data/*
-logs/*
-output/*
-wandb/*
 .env
 *.log
+
+checkpoints
+data/greatest-hits/mic-mp4-processed
+data/greatest-hits/webdataset
+logs
+output
+wandb
+
 
 # Ignore model checkpoints
 CondFoleyGen/specvqgan/melgan_ckpt/best_netG.pt
