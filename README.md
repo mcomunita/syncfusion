@@ -207,7 +207,7 @@ You can now run:
 - `CUDA_VISIBLE_DEVICES=0 sh script/run_evaluate_gh_gen_pred_augment.sh` (evaluates FAD for diffusion conditioning with predicted onsets obtained via augmented model and audio; Table 3)
 
 :warning:
-You could need to reduce the batch size in the `exp` files, depending on your available GPU memory. Results may vary because of this. Experiments in paper performed with bs=10.
+You might need to reduce the batch size in the `exp` files, depending on your available GPU memory. Results may vary because of this. Experiments in paper performed with bs=10.
 
 To compute the onset metrics for the diffusion model (i.e., Average Precision, Binary Accuracy and Number of Onsets Accuracy) run:
 
